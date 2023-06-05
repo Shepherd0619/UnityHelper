@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Unity WebGL Player | TourTune</title>
+  <link rel="shortcut icon" href="TemplateData/favicon.ico">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <script>
+    if ('vibrate' in navigator) {
+      // 支持震动功能
+    } else {
+      // 不支持震动功能
+      alert('注意，您当前的浏览器不支持部分HTML5特性，一些视听效果选项将不可用。')
+    }
+  </script>
+
+</head>
+
+<body>
+  <style type="text/css">
+    #warning-message {
+      display: none;
+    }
+
+    @media only screen and (orientation:portrait) {
+      #wrapper {
+        display: none;
+      }
+
+      #warning-message {
+        display: block;
+      }
+    }
+
+    @media only screen and (orientation:landscape) {
+      #warning-message {
+        display: none;
+      }
+    }
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      /* 将按钮放到底部 */
+      right: 10px;
+      /* 将按钮放到右侧 */
+      z-index: 10000;
+    }
+  </style>
+  <div id="wrapper">
+    <!-- your html for your website -->
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">TourTune</div>
+      </div>
+    </div>
+    <script>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
+
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function () {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/WebGL.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/WebGL.data.unityweb",
+        frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
+        codeUrl: buildUrl + "/WebGL.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Raymoyne",
+        productName: "TourTune",
+        productVersion: "0.1",
+        showBanner: unityShowBanner,
+      };
+
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        container.className = "unity-mobile";
+        canvas.className = "unity-mobile";
+
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        // config.devicePixelRatio = 1;
+
+        unityShowBanner('为保证游戏体验和正确运行，推荐您使用Google Chrome浏览器。');
+
+      } else {
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        unityShowBanner('为保证游戏体验和正确运行，推荐您在移动设备上游玩。')
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+    <!-- 全屏按钮 -->
+    <button class="fullscreen-btn" onclick="toggleFullscreen()">全屏</button>
+    <script>
+      function toggleFullscreen() {
+        var elem = document.documentElement;
+        if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+          // 如果没有全屏元素，则请求全屏权限
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+          } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+          } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+          }
+          document.querySelector('.fullscreen-btn').innerText = '退出全屏'; // 更改按钮文本为“退出全屏”
+        } else {
+          // 如果已经在全屏模式下，则退出全屏模式
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+          document.querySelector('.fullscreen-btn').innerText = '全屏'; // 更改按钮文本为“全屏”
+        }
+      }
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      document.querySelector('.fullscreen-btn').style.display = 'block';
+      }else{
+        document.querySelector('.fullscreen-btn').style.display = 'none';
+      }
+    </script>
+  </div>
+  <div id="warning-message">
+    <div class="media-tip">
+      <div class='media-tip-content'>
+        <svg class="icon-phone" width="200px" height="200.00px" viewBox="0 0 1024 1024" version="1.1"
+          xmlns="http://www.w3.org/2000/svg">
+          <path fill="#fff"
+            d="M350.321714 76.893274c-41.631166 0-75.558883 33.827433-75.558883 75.475995L274.762831 871.614357c0 41.627073 33.926694 75.491345 75.558883 75.491345l323.756685 0c41.557488 0 75.466786-33.864272 75.466786-75.491345L749.545184 152.36927c0-41.648562-33.910321-75.475995-75.466786-75.475995L350.321714 76.893274 350.321714 76.893274zM703.650925 795.23069 320.692906 795.23069l0-566.461379 382.958018 0L703.650925 795.23069 703.650925 795.23069zM473.188043 867.8885c0-21.515013 17.47807-39.029922 38.938847-39.029922 21.577434 0 39.146579 17.514909 39.146579 39.029922 0 21.585621-17.569144 39.138392-39.146579 39.138392C490.666112 907.026892 473.188043 889.474121 473.188043 867.8885L473.188043 867.8885zM549.691437 153.348574c4.930289 0 8.908904 3.966335 8.908904 8.875135 0 4.801353-3.979638 8.767688-8.908904 8.767688l-74.992995 0c-4.854565 0-8.876158-3.962242-8.876158-8.767688 0-4.9088 4.021593-8.875135 8.876158-8.875135L549.691437 153.348574 549.691437 153.348574zM549.691437 153.348574" />
+        </svg>
+        <div class='media-tip-text'>
+          <strong>旋转屏幕</strong>以获得最佳体验。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
