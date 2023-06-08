@@ -24,12 +24,19 @@
         }
 
         // 将GPS位置信息转换为Unity场景中的坐标
-        private Vector3 GPS2Unity(Vector2 position)
+        public Vector3 GPS2Unity(Vector2 position)
         {
             var x = (position.x - xOrigin) * scaleFactor;
             var z = (position.y - zOrigin) * scaleFactor;
             return new Vector3(x, 0, z);
         }
 
+        // 将Unity场景中的坐标转换为GPS坐标
+        public Vector2 Unity2GPS(Vector3 position)
+        {
+            var x = position.x / scaleFactor + xOrigin;
+            var z = position.z / scaleFactor + zOrigin;
+            return new Vector2(z, x);
+        }
     }
 }
