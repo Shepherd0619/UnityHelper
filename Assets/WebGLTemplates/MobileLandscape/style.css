@@ -1,0 +1,64 @@
+/* body reset */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.media-tip {
+    color: #fff;
+    background-color: #313131;
+    z-index: 100;
+    position: fixed;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.media-tip-content {
+    transform: rotate(90deg);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.media-tip-text {
+    margin-left: 1.25rem;
+    letter-spacing: 0.25rem;
+    /* 防止 div 内文字换行 */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.icon-phone {
+    width: 2.8125rem;
+    animation: spin 3s infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0);
+    }
+
+    50% {
+        transform: rotate(90deg);
+    }
+
+    100% {
+        transform: rotate(0);
+    }
+}
+
+/* 竖屏识别 */
+@media all and (orientation : portrait) {
+
+    .media-tip {
+        visibility: visible;
+    }
+
+}
