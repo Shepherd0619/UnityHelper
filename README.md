@@ -13,13 +13,11 @@ This repository includes following content:
 # Before you use
 This repository is under BSD Version 3 license.
 
+Welcome anyone to contribute your scripts to help other WebGL developers!
+
 **By continuing to use, you agree to the BSD version 3 license.**
 
-This repository is also available on Unity Asset Store.
-
 If you encountered some issues or want to submit a suggestion, please move to **Issues**.
-
-If you like this repository, please consider giving me a star or following my social media.
 
 # Contact Information
 Twitter, CSDN, Github: @shepherd0619
