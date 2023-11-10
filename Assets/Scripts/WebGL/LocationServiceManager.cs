@@ -1,4 +1,4 @@
-﻿namespace WebGLHelper
+﻿namespace UnityHelper.WebGL
 {
     using System.Collections;
     using System.Collections.Generic;

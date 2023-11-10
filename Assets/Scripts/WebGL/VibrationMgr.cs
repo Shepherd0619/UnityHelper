@@ -1,4 +1,4 @@
-namespace WebGLHelper
+namespace UnityHelper.WebGL
 {
     using UnityEngine;
     using System.Runtime.InteropServices;
